@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/sample_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="camera"
+        android:text="进入相机"
+        />
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/recode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="recode"
+        android:text="录制视频"
+        />
+
+</LinearLayout>
