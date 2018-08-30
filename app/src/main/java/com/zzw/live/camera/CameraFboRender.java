@@ -1,6 +1,7 @@
 package com.zzw.live.camera;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
@@ -62,7 +63,6 @@ public class CameraFboRender implements EglSurfaceView.Render, SurfaceTexture.On
     //变换矩阵
     private float[] matrix = new float[16];
 
-
     private int screenW, screenH;
 
     private Context context;
@@ -72,9 +72,9 @@ public class CameraFboRender implements EglSurfaceView.Render, SurfaceTexture.On
 
     private OnSurfaceListener onSurfaceListener;
 
+
     public CameraFboRender(Context context) {
         this.context = context;
-
         screenW = DisplayUtil.getScreenW(context);
         screenH = DisplayUtil.getScreenH(context);
 
@@ -95,8 +95,10 @@ public class CameraFboRender implements EglSurfaceView.Render, SurfaceTexture.On
     }
 
 
+
     @Override
     public void onSurfaceCreated() {
+
         program = ShaderUtil.createProgram(ShaderUtil.readRawTxt(context, R.raw.vertex_shader),
                 ShaderUtil.readRawTxt(context, R.raw.fragment_shader));
 
@@ -115,6 +117,8 @@ public class CameraFboRender implements EglSurfaceView.Render, SurfaceTexture.On
 
             //创建相机预览扩展纹理
             createCameraRenderTexture();
+
+
         }
 
         cameraRender.onSurfaceCreated();
@@ -144,21 +148,20 @@ public class CameraFboRender implements EglSurfaceView.Render, SurfaceTexture.On
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, fboId);
 
         //摄像头预览扩展纹理赋值
-//        GLES20.glActiveTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES);
-//        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, cameraRenderTextureId);
-//        GLES20.glUniform1i(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0);
-
-        //给变换矩阵赋值
-        GLES20.glUniformMatrix4fv(uMatrix, 1, false, matrix, 0);
+        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, cameraRenderTextureId);
 
         GLES20.glEnableVertexAttribArray(avPosition);
         GLES20.glEnableVertexAttribArray(afPosition);
+
+        //给变换矩阵赋值
+        GLES20.glUniformMatrix4fv(uMatrix, 1, false, matrix, 0);
 
         //使用VBO设置纹理和顶点值
         useVboSetVertext();
 
         //绘制 GLES20.GL_TRIANGLE_STRIP:复用坐标
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, vertexCount);
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
+
         GLES20.glDisableVertexAttribArray(avPosition);
         GLES20.glDisableVertexAttribArray(afPosition);
 
@@ -290,7 +293,7 @@ public class CameraFboRender implements EglSurfaceView.Render, SurfaceTexture.On
         surfaceTexture.setOnFrameAvailableListener(this);
 
         if (onSurfaceListener != null) {
-            onSurfaceListener.onSurfaceCreate(surfaceTexture,fboTextureId);
+            onSurfaceListener.onSurfaceCreate(surfaceTexture, fboTextureId);
         }
 
         // 解绑扩展纹理
@@ -308,6 +311,9 @@ public class CameraFboRender implements EglSurfaceView.Render, SurfaceTexture.On
     }
 
     public interface OnSurfaceListener {
-        void onSurfaceCreate(SurfaceTexture surfaceTexture,int fboTextureId);
+        void onSurfaceCreate(SurfaceTexture surfaceTexture, int fboTextureId);
     }
+
+
+
 }
