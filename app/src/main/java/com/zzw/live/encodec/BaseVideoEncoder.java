@@ -175,14 +175,21 @@ public abstract class BaseVideoEncoder {
 
     public void putPcmData(byte[] buffer, int size) {
         if (mAudioEncodecThread != null && !mAudioEncodecThread.isExit && buffer != null && size > 0) {
-            int inputBufferIndex = mAudioEncodec.dequeueInputBuffer(0);
-            if (inputBufferIndex >= 0) {
+            int total = Math.min(size, buffer.length);
+            int offset = 0;
+            while (offset < total) {
+                int inputBufferIndex = mAudioEncodec.dequeueInputBuffer(10000);
+                if (inputBufferIndex < 0) {
+                    break;
+                }
                 ByteBuffer byteBuffer = mAudioEncodec.getInputBuffers()[inputBufferIndex];
                 byteBuffer.clear();
-                byteBuffer.put(buffer);
-                long pts = getAudioPts(size, sampleRate, channel, sampleBit);
+                int len = Math.min(total - offset, byteBuffer.remaining());
+                byteBuffer.put(buffer, offset, len);
+                long pts = getAudioPts(len, sampleRate, channel, sampleBit);
                 Log.e("zzz", "AudioTime = " + pts / 1000000.0f);
-                mAudioEncodec.queueInputBuffer(inputBufferIndex, 0, size, pts, 0);
+                mAudioEncodec.queueInputBuffer(inputBufferIndex, 0, len, pts, 0);
+                offset += len;
             }
         }
     }
